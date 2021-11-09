@@ -19,11 +19,13 @@ trip_routes_stop_times_stops = trip_routes_stop_times.merge(
 filtered_columns_sorted = trip_routes_stop_times_stops[[
     # FIRST ROW ATTRIBUTES ARE NECESSARY; OTHERS ARE OPTIONAL
     "route_id", "trip_id", "direction_id", "stop_id", "stop_sequence",
-    "shape_dist_traveled", "trip_headsign"
+    "shape_dist_traveled", "trip_headsign", "route_type"
 ]]
 
-self_join = filtered_columns_sorted.merge(
-    filtered_columns_sorted, on=["route_id", "trip_id", "direction_id", "trip_headsign"])
+only_bus_routes = filtered_columns_sorted[filtered_columns_sorted["route_type"] == 3]
+
+self_join = only_bus_routes.merge(
+    only_bus_routes, on=["route_id", "trip_id", "direction_id", "trip_headsign", "route_type"])
 filtered_rows = self_join[self_join["stop_sequence_y"]
                           == self_join["stop_sequence_x"] + 1]
 remove_trip_id = filtered_rows.drop(columns=["trip_id"])
@@ -40,7 +42,7 @@ pd_for_graph_generation = final.merge(routes, on="route_id", how="inner")
 pd_for_graph_generation = pd_for_graph_generation[[
     "route_id", "direction_id", "stop_id_x", "stop_id_y",
     "distance", "trip_headsign", "route_short_name",
-    "route_long_name", "route_type", "route_num"
+    "route_long_name", "route_type_x", "route_num"
 ]]
 # pd_for_graph_generation = pd_for_graph_generation.astype({
 #     "direction_id": int,
@@ -50,9 +52,8 @@ pd_for_graph_generation = pd_for_graph_generation[[
 
 print(final)
 final.to_csv("edge_list.csv", index="False")
-print(pd_for_graph_generation.dtypes)
 
-# ----------- GRAPH GENERATION
+# ----------- GRAPH GENERATION -----------
 
 G = nx.from_pandas_edgelist(pd_for_graph_generation,
                             "stop_id_x", "stop_id_y", edge_attr=True)
