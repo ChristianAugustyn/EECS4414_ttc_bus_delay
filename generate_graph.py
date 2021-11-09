@@ -56,7 +56,7 @@ final.to_csv("edge_list.csv", index="False")
 # ----------- GRAPH GENERATION -----------
 
 G = nx.from_pandas_edgelist(pd_for_graph_generation,
-                            "stop_id_x", "stop_id_y", edge_attr=True)
+                            "stop_id_x", "stop_id_y", edge_attr=True, create_using=nx.MultiDiGraph())
 
 # add node attributes
 stop_node_attr = stops[[
