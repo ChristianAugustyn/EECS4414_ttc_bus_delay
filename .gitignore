@@ -1,0 +1,5 @@
+opendata_ttc_schedules/
+.vscode/
+__pycache__/
+[~][$]*
+test.py
