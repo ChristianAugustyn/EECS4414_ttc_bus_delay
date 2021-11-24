@@ -11,32 +11,45 @@ pagerank = nx.pagerank(G)
 
 sorted_tuples = reversed(sorted(pagerank.items(), key=lambda item: item[1]))
 sorted_dict = {k: v for k, v in sorted_tuples}
+print("sorted")
 
-plt.hist(list(pagerank.values()))
-plt.title(f"Distribution of PageRank Values")
-plt.xlabel("PageRank Value")
-plt.ylabel("Count")
-plt.show()
+# plt.hist(list(pagerank.values()))
+# plt.title(f"Distribution of PageRank Values")
+# plt.xlabel("PageRank Value")
+# plt.ylabel("Count")
+# plt.show()
 # for item in islice(sorted_dict.items(), 50): 
 #     print(G.nodes[item[0]]["stop_name"])
-print("with all nodes")
+# print("with all nodes")
 # print(nx.edge_betweenness_centrality(pagerank))
 # print(nx.global_efficiency(pagerank))
 # print(nx.average_clustering(pagerank))
 
-f = open("calculation.txt")
+g = open("global_eff_calculation.txt", 'w')
+a = open("average_clustering_calculation.txt", 'w')
 
-for k, v in sorted_dict:
-    temp = pagerank.remove_node(k)
-    f.write("remove " + k + " : ")
-    print("remove " + k + " : ")
-    # f.write(nx.edge_betweenness_centrality(temp))
-    # print(nx.edge_betweenness_centrality(temp))
-    f.write(nx.global_efficiency(temp))
-    print(nx.global_efficiency(temp))
-    f.write(nx.average_clustering(temp))
-    print(nx.average_clustering(temp))
-    break
+G = G.to_undirected()
+print("here")
 
-f.close()
+# OG graph
+print("global")
+g.write(str(nx.global_efficiency(G))+"\n")
+H = nx.Graph(G)
+print("avg clustering")
+a.write(str(nx.average_clustering(H))+"\n")
+print("done")
+
+# Remove nodes one by one
+for k, v in sorted_dict.items():
+    print("k: "+ k)
+    G.remove_node(k)
+    print("global")
+    g.write(str(nx.global_efficiency(G))+"\n")
+    H = nx.Graph(G)
+    print("avg clustering")
+    a.write(str(nx.average_clustering(H))+"\n")
+    # break
+
+g.close()
+a.close()
   
